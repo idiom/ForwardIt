@@ -3,6 +3,8 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Office = Microsoft.Office.Core;
+using Outlook = Microsoft.Office.Interop.Outlook;
+using System.Windows.Forms;
 
 
 namespace ForwardIt
@@ -28,11 +30,13 @@ namespace ForwardIt
                 Object selObject = olapp.ActiveExplorer().Selection[1];
 
                 if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
-                {
-                    Microsoft.Office.Interop.Outlook.MailItem mailItem = (selObject as Microsoft.Office.Interop.Outlook.MailItem);
-                    var fwdmail = mailItem.Forward();
-                    fwdmail.Recipients.Add(this.email);
-                    fwdmail.Send();
+                {                    
+                    Outlook.MailItem mailItem = this.GetSelectedItem();
+                    if(mailItem != null)
+                    {                    
+                        mailItem.Recipients.Add(this.email);
+                        mailItem.Send();                    
+                    }   
                 }
             }
             catch (System.Exception ex)
@@ -41,6 +45,47 @@ namespace ForwardIt
 
             }
         }
+        
+
+        /// <summary>
+        /// Forward the selected email as an attachment
+        /// </summary>
+        private void SendMailAsAttachment()
+        {
+            var olapp = new Microsoft.Office.Interop.Outlook.Application(); 
+
+            Outlook.MailItem mail = olapp.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
+            
+            mail.Subject = "ForwardIt";                                    
+            //Add the configured email addy.
+            mail.Recipients.Add(email);
+            mail.Recipients.ResolveAll();
+            mail.Attachments.Add(GetSelectedItem(), Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);                
+            mail.Send();
+            
+        }
+
+
+        /// <summary>
+        /// Get and return the selected item. If it isn't a mail item return null
+        /// </summary>
+        /// <returns></returns>
+        private Outlook.MailItem GetSelectedItem()
+        {
+                var olapp = new Microsoft.Office.Interop.Outlook.Application();
+                Object selObject = olapp.ActiveExplorer().Selection[1];
+
+                if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
+                {
+                    return selObject as Outlook.MailItem;
+                }
+                else
+                {
+                    return null;
+                }
+        }
+
+
 
         #region IRibbonExtensibility Members
 
@@ -61,7 +106,11 @@ namespace ForwardIt
         public void OnClick(Office.IRibbonControl control)
         {
             //Process the mail.
+            MessageBox.Show("Forwarding Email");
             ProcessMail();
+            MessageBox.Show("Attaching Email as Attachment");
+            SendMailAsAttachment();
+
         }
         
 
