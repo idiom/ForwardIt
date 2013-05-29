@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+  <ribbon>
+    <tabs>
+      <tab idMso="TabMail">
+        <group id="GroupMailRespond">
+          <button id="FWDEmail"
+                 size="large"
+                 label="Forward Email"
+                 imageMso="JunkEmailAddToBlockedSendersList"
+                 onAction="OnClick"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
+
