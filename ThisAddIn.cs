@@ -29,6 +29,11 @@ namespace ForwardIt
         }
 
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private string GetEmailFromReg()
         {                                    
             RegistryKey sk1 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\OutlookSample");            
@@ -36,8 +41,7 @@ namespace ForwardIt
             
             if ( sk1 == null )
             {
-                //Couldn't load the reg key
-                throw new Exception("Email Not configured!");
+                return null;
             }
             else
             {

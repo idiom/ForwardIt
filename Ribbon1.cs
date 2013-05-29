@@ -26,22 +26,28 @@ namespace ForwardIt
         {
             try
             {
-                var olapp = new Microsoft.Office.Interop.Outlook.Application();
-                Object selObject = olapp.ActiveExplorer().Selection[1];
+                if (!String.IsNullOrEmpty(email))
+                {
+                    var olapp = new Microsoft.Office.Interop.Outlook.Application();
+                    Object selObject = olapp.ActiveExplorer().Selection[1];
 
-                if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
-                {                    
-                    Outlook.MailItem mailItem = this.GetSelectedItem();
-                    if(mailItem != null)
+                    if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
                     {                    
-                        mailItem.Recipients.Add(this.email);
-                        mailItem.Send();                    
-                    }   
+                        Outlook.MailItem mailItem = this.GetSelectedItem();
+                        if(mailItem != null)
+                        {                                                                                                                  
+                            mailItem.Recipients.Add(this.email);
+                            mailItem.Send();                        
+                        }   
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Email isn't configured");
                 }
             }
             catch (System.Exception ex)
-            {
-                //todo log this.
+            {                
 
             }
         }
@@ -52,17 +58,22 @@ namespace ForwardIt
         /// </summary>
         private void SendMailAsAttachment()
         {
-            var olapp = new Microsoft.Office.Interop.Outlook.Application(); 
+            if (!String.IsNullOrEmpty(email))
+            {
+                var olapp = new Microsoft.Office.Interop.Outlook.Application(); 
 
-            Outlook.MailItem mail = olapp.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
+                Outlook.MailItem mail = olapp.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
             
-            mail.Subject = "ForwardIt";                                    
-            //Add the configured email addy.
-            mail.Recipients.Add(email);
-            mail.Recipients.ResolveAll();
-            mail.Attachments.Add(GetSelectedItem(), Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);                
-            mail.Send();
-            
+                mail.Subject = "ForwardIt";                                    
+                //Add the configured email.
+                mail.Recipients.Add(email);                
+                mail.Attachments.Add(GetSelectedItem(), Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);                       
+                mail.Send();
+            }
+            else
+            {
+                MessageBox.Show("Email isn't configured");
+            }            
         }
 
 
@@ -72,17 +83,17 @@ namespace ForwardIt
         /// <returns></returns>
         private Outlook.MailItem GetSelectedItem()
         {
-                var olapp = new Microsoft.Office.Interop.Outlook.Application();
-                Object selObject = olapp.ActiveExplorer().Selection[1];
+            var olapp = new Microsoft.Office.Interop.Outlook.Application();
+            Object selObject = olapp.ActiveExplorer().Selection[1];
 
-                if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
-                {
-                    return selObject as Outlook.MailItem;
-                }
-                else
-                {
-                    return null;
-                }
+            if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
+            {
+                return selObject as Outlook.MailItem;
+            }
+            else
+            {
+                return null;
+            }
         }
 
 
@@ -106,9 +117,9 @@ namespace ForwardIt
         public void OnClick(Office.IRibbonControl control)
         {
             //Process the mail.
-            MessageBox.Show("Forwarding Email");
-            ProcessMail();
-            MessageBox.Show("Attaching Email as Attachment");
+            //MessageBox.Show("Forwarding Email");
+            //ProcessMail();
+            //MessageBox.Show("Attaching Email as Attachment");
             SendMailAsAttachment();
 
         }
