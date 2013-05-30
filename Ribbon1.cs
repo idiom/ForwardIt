@@ -21,35 +21,31 @@ namespace ForwardIt
             this.email = email;
         }
 
-
-        private void ProcessMail()
+        /// <summary>
+        /// Forward the selected mail
+        /// </summary>
+        private void ForwardMail()
         {
-            try
+            
+            if (!String.IsNullOrEmpty(email))
             {
-                if (!String.IsNullOrEmpty(email))
-                {
-                    var olapp = new Microsoft.Office.Interop.Outlook.Application();
-                    Object selObject = olapp.ActiveExplorer().Selection[1];
+                var olapp = new Microsoft.Office.Interop.Outlook.Application();
+                Object selObject = olapp.ActiveExplorer().Selection[1];
 
-                    if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
-                    {                    
-                        Outlook.MailItem mailItem = this.GetSelectedItem();
-                        if(mailItem != null)
-                        {                                                                                                                  
-                            mailItem.Recipients.Add(this.email);
-                            mailItem.Send();                        
-                        }   
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Email isn't configured");
+                if (selObject is Microsoft.Office.Interop.Outlook.MailItem)
+                {                    
+                    Outlook.MailItem mailItem = this.GetSelectedItem();
+                    if(mailItem != null)
+                    {                                                                                                                  
+                        mailItem.Recipients.Add(this.email);
+                        mailItem.Send();                        
+                    }   
                 }
             }
-            catch (System.Exception ex)
-            {                
-
-            }
+            else
+            {
+                MessageBox.Show("Email isn't configured");
+            }         
         }
         
 
@@ -60,15 +56,24 @@ namespace ForwardIt
         {
             if (!String.IsNullOrEmpty(email))
             {
-                var olapp = new Microsoft.Office.Interop.Outlook.Application(); 
 
-                Outlook.MailItem mail = olapp.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
-            
-                mail.Subject = "ForwardIt";                                    
-                //Add the configured email.
-                mail.Recipients.Add(email);                
-                mail.Attachments.Add(GetSelectedItem(), Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);                       
-                mail.Send();
+                Outlook.MailItem selectedMail = GetSelectedItem();
+                if (selectedMail != null)
+                {
+                    var olapp = new Microsoft.Office.Interop.Outlook.Application();
+
+                    Outlook.MailItem mail = olapp.CreateItem(Outlook.OlItemType.olMailItem) as Outlook.MailItem;
+
+                    mail.Subject = "ForwardIt";
+                    //Add the configured email.
+                    mail.Recipients.Add(email);
+                    mail.Attachments.Add(selectedMail, Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);
+                    mail.Send();
+                }
+                else
+                {
+                    MessageBox.Show("No items selected...");
+                }
             }
             else
             {
@@ -116,12 +121,10 @@ namespace ForwardIt
 
         public void OnClick(Office.IRibbonControl control)
         {
-            //Process the mail.
-            //MessageBox.Show("Forwarding Email");
+            //Forward the Mail
             //ProcessMail();
-            //MessageBox.Show("Attaching Email as Attachment");
+            //Forward the Mail as an Attachment
             SendMailAsAttachment();
-
         }
         
 

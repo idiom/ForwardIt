@@ -44,7 +44,7 @@ namespace ForwardIt
         {                                                
             RegistryKey root   = Registry.LocalMachine;
             RegistryKey subkey = root.OpenSubKey(@"SOFTWARE\OutlookSample");            
-            string keyname = "email";
+            string keyname = "Email";
             return (subkey == null ? null : subkey.GetValue(keyname) as string);
         }
 
