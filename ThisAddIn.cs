@@ -29,31 +29,23 @@ namespace ForwardIt
         }
 
 
+        private void CleanUp()
+        {
+            //cleanup code here
+        }
+
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         private string GetEmailFromReg()
-        {                                    
-            RegistryKey sk1 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\OutlookSample");            
+        {                                                
+            RegistryKey root   = Registry.LocalMachine;
+            RegistryKey subkey = root.OpenSubKey(@"SOFTWARE\OutlookSample");            
             string keyname = "email";
-            
-            if ( sk1 == null )
-            {
-                return null;
-            }
-            else
-            {
-                try 
-                {                    
-                    return (string)sk1.GetValue(keyname);
-                }
-                catch (Exception ex)
-                {                                        
-                    return null;
-                }
-            }
+            return (subkey == null ? null : subkey.GetValue(keyname) as string);
         }
 
         #region VSTO generated code
@@ -65,7 +57,7 @@ namespace ForwardIt
         private void InternalStartup()
         {
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
-            this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
+            this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);           
         }
         
         #endregion
